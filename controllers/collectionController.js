@@ -5,13 +5,9 @@ const { Collection } = require('../models/models')
 
 class CollectionController {
     async create(req, res, next) {
-        console.log('enter create collection')
-        console.log(req.body)
         try {
             let { published, name, description, userId } = req.body
             const {img} = req.files
-
-            // let convertedUserId = Number(String(userId))
 
             let fileName = uuid.v4() + '.jpg'
             img.mv(path.resolve(__dirname, '..', 'static', fileName))
