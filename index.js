@@ -11,8 +11,15 @@ const path = require('path')
 const PORT = process.env.PORT || 8000
 
 const corsOptions = {
-    origin: 'http://localhost:3000',
-    origin: 'http://127.0.0.1:3000',
+    origin: (origin, callback) => {
+        if (origin === undefined || origin.startsWith('http://localhost')) {
+             callback(null, true);
+         } else{
+            callback(new Error('Not allowed by CORS'));
+        }
+
+    },
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
 
 const app = express()
