@@ -18,9 +18,9 @@ const User = sequelize.define('user', {
 const Collection = sequelize.define('collection', {
     id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
     published: {type: DataTypes.BOOLEAN, defaultValue: false},
-    name: {type: DataTypes.STRING, allowNull: false},
+    title: {type: DataTypes.STRING, allowNull: false},
     description: {type: DataTypes.TEXT, allowNull: true},
-    img: {type: DataTypes.STRING, allowNull: true},
+    image: {type: DataTypes.STRING, allowNull: true},
     views: {type: DataTypes.INTEGER, defaultValue: 0},
     likes: {type: DataTypes.INTEGER, defaultValue: 0}
 },
@@ -32,14 +32,16 @@ const Collection = sequelize.define('collection', {
   },)
 
 const Movie = sequelize.define('movie', {
-    id: {type: DataTypes.INTEGER, primaryKey: true},
+    id: {type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true},
+    kinopoiskId: {type: DataTypes.INTEGER, allowNull: false},
+    orderId: {type: DataTypes.INTEGER, allowNull: false}
 })
 
 
 User.hasMany(Collection)
 Collection.belongsTo(User)
 
-Collection.hasMany(Movie)
+Collection.hasMany(Movie, {as: 'movies'})
 Movie.belongsTo(Collection)
 
 
