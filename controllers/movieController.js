@@ -1,4 +1,5 @@
 const { Movie } = require("../models/models")
+const ApiError = require('../error/ApiError')
 
 class MovieController {
     async getMoviesByCollectionId(req, res, next) {

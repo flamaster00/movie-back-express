@@ -39,7 +39,7 @@ const Movie = sequelize.define('movie', {
 
 
 User.hasMany(Collection)
-Collection.belongsTo(User)
+Collection.belongsTo(User, {foreignKey: 'userId', as: 'user'})
 
 Collection.hasMany(Movie, {as: 'movies'})
 Movie.belongsTo(Collection)

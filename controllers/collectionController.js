@@ -1,30 +1,31 @@
 const uuid = require('uuid')
 const path = require('path');
 const ApiError = require('../error/ApiError')
-const { Collection, Movie } = require('../models/models')
+const { Collection, Movie, User } = require('../models/models');
+const { model } = require('../db');
 
 class CollectionController {
     async create(req, res, next) {
         try {
-            const { user } = req
-            const { published, title, description, movies } = req.body
+            let { user } = req
+            let { published, title, description, movies } = req.body
             console.log(user);
             let fileName = null
             if (req.files) {
-                const { image } = req.files
+                let { image } = req.files
                 fileName = uuid.v4() + '.jpg'
                 image.mv(path.resolve(__dirname, '..', 'static', fileName))
             }
 
             let publishedValue = published ? published : false
 
-            const collection = await Collection.create({ title, description, image: fileName, userId: user.id, published: publishedValue })
+            let collection = await Collection.create({ title, description, image: fileName, userId: user.id, published: publishedValue })
 
             if (movies) {
                 movies = JSON.parse(movies)
-                movies.forEach((i, ind) => {
+                movies.forEach((id, ind) => {
                     Movie.create({
-                        kinopoiskId: i,
+                        kinopoiskId: id,
                         orderId: ind,
                         collectionId: collection.id
                     })
@@ -47,7 +48,17 @@ class CollectionController {
             limit = limit || 10
             let offset = page * limit - limit
 
-            let collections = await Collection.findAndCountAll({ limit, offset })
+            let collections = await Collection.findAndCountAll({ limit, offset, 
+                attributes: {
+                    exclude: ['userId'],
+                },
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'username', 'email']
+                }],
+            })
+
 
             return res.json(collections)
         } catch (error) {
@@ -60,7 +71,17 @@ class CollectionController {
     async getOne(req, res) {
         try {
             const { id } = req.params
-            const collection = await Collection.findOne({ where: { id } })
+            const collection = await Collection.findOne({
+                where: { id },
+                attributes: {
+                    exclude: ['userId'],
+                },
+                include: [{
+                    model: User,
+                    as: 'user',
+                    attributes: ['id', 'username', 'email']
+                }],
+            })
             return res.json(collection)
         } catch (error) {
             console.log(error)

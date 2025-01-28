@@ -19,11 +19,11 @@ class UserController {
         }
         const candidateWithEmail = await User.findOne({where: {email}})
         if (candidateWithEmail) {
-            return next(ApiError.badRequest('Пользователь с таким email уже существует'))
+            return next(ApiError.badRequest('Аккаунт с такой почтой уже существует'))
         }
         const candidateWithUsername = await User.findOne({where: {username}})
         if (candidateWithUsername) {
-            return next(ApiError.badRequest('Пользователь с таким username уже существует'))
+            return next(ApiError.badRequest('Аккаунт с таким именем уже существует'))
         }
         const hashPassword = await bcrypt.hash(password, 5)
         const user = await User.create({email,password: hashPassword, username, role})
@@ -35,11 +35,11 @@ class UserController {
         const {email, password} = req.body
         const user = await User.findOne({where: {email}})
         if (!user) {
-            return next(ApiError.notFound('Пользователь не найден'))
+            return next(ApiError.notFound('Почта не найдена'))
         }
         let comparePassword = bcrypt.compareSync(password, user.password)
         if (!comparePassword) {
-            return next(ApiError.forbidden('Указан неверный пароль'))
+            return next(ApiError.forbidden('Указан неправильный пароль'))
         }
         const token = generateJwt(user.id, user.email, user.username, user.role)
         return res.json({token})
