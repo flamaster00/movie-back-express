@@ -68,9 +68,12 @@ class CollectionController {
 
     }
 
-    async getOne(req, res) {
+    async getOne(req, res, next) {
         try {
             const { id } = req.params
+            if (isNaN(id)) {
+                return next(ApiError.badRequest(`Ошибка в id коллекции: ${error}`))
+            }
             const collection = await Collection.findOne({
                 where: { id },
                 attributes: {
